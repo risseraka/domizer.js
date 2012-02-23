@@ -7,6 +7,7 @@ which originally was inspired by http://trapm.com/vana-templating-an-utterly-sen
 I simply tried to get the functional idea back into the tool without it to become too blotted.
 
 Use:
+
     var builder = domizer({}),
         html = builder.div({"class": "myClass"}, "This is pretty easy!");
     
