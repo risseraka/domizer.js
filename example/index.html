@@ -5,42 +5,53 @@
     <iframe id="iframe01" style="width:270px; height:50%;"></iframe>
     <script type="text/javascript" src="../domizer.js"></script>
     <script type="text/javascript">
-    if (!Array.prototype.foreach) {
-        Array.prototype.map = function map(func) {
-            var i, j, result = [];
+        var _ = domizer({});
 
-            for (i = 0, j = this.length; i < j; i += 1) {
-                result.push(func(this[i], i));
-            }
-            return result;
+        _.standardPage = function (title, head) {
+            return _["!DOCTYPE"]({"html": undefined},
+                _.html.apply(this, [
+                    {"lang": "en", "class": "js"},
+                    _.head(
+                        _.meta({"http-equiv": "X-UA-Compatible", "content": "IE=8;chrome=1"}),
+                        _.meta({"charset": "utf-8"}),
+                        _.title(title) + (head || "")
+                    )
+                ].concat(Array.prototype.slice.call(arguments, 2))));
         };
-    }
 
-    $.header = function (title) {
-        return $.div({"id": "header", "class": "header"},
-            $.h1({"style": "float:left"},
-                title),
-            $.br(),
-            $.list({"id": "navbar"}, [
-                    "Home", "Pricing", "Contact", "About"
-                ].map(function (el, i) {
-                    return [{
-                            "id": "menu" + i,
-                            "style": "float:left;"
-                        },
-                        $.linkTo("/" + el.toLowerCase(),
-                        $.image("./images/item.png"), " " + el)
-                    ];
-                })));
-    };
+        _.list = function (options, items) {
+            return _.ul(options, (function () {
+                return items.map(function (item) {
+                    return _.li.apply(this, item);
+                }).join("");
+            }()));
+        };
 
-    var txt =
-        $.standardPage("This page is built out of 100% organic JavaScript",
-            "",
-            $.body(
-                $.header("This is crazy DRY")));
+        _.header = function (title) {
+            return _.div({"id": "header", "class": "header"},
+                _.h1({"style": "float:left"},
+                    title),
+                _.br(),
+                _.list({"id": "navbar"}, [
+                        "Home", "Pricing", "Contact", "About"
+                    ].map(function (el, i) {
+                        return [{
+                                "id": "menu" + i,
+                                "style": "float:left;"
+                            },
+                            _.linkTo("/" + el.toLowerCase(),
+                            _.image("./images/item.png"), " " + el)
+                        ];
+                    })));
+        };
 
-      window.frames['iframe01'].document.body.innerHTML = txt;
+        var txt =
+            _.standardPage("This page is built out of 100% organic JavaScript",
+                "",
+                _.body(
+                    _.header("This is crazy DRY")));
+
+          window.frames['iframe01'].document.body.innerHTML = txt;
     </script>
   </body>
 </html>
