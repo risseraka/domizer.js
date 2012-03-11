@@ -1,40 +1,56 @@
+/*global document, HTMLElement*/
+
 function domizer(_) {
     _ = _ || {};
 
     var is = (function constructor() {
-        function buildTypeFunc(type) {
-            return function isType(obj) {
-                return Object.prototype.toString.call(obj) === "[object " + type + "]";
-            };
-        }
+            function buildTypeFunc(type) {
+                return function isType(obj) {
+                    return Object.prototype.toString.call(obj) === "[object " + type + "]";
+                };
+            }
 
-        var that = {},
-            types = ["Array", "RegExp", "Date", "Number", "String", "Object", "Function"],
-            i;
+            var that = {},
+                types = ["Array", "RegExp", "Date", "Number", "String", "Object", "Function"],
+                i;
 
-        for (i = types.length - 1; i >= 0; i -= 1) {
-            that[types[i]] = buildTypeFunc(types[i]);
-        }
-        return that;
-    }());
+            for (i = types.length - 1; i >= 0; i -= 1) {
+                that[types[i]] = buildTypeFunc(types[i]);
+            }
+            return that;
+        }()),
+        tags = [
+            "a", "abbr", "address", "area", "article", "aside", "audio",
+            "b", "base", "bdo", "blockquote", "body", "br", "button", "canvas",
+            "caption", "cite", "code", "col", "colgroup", "command", "datalist",
+            "dd", "del", "details", "dfn", "div", "dl", "dt", "em", "embed",
+            "eventsource", "fieldset", "figcaption", "figure", "footer", "form", "h1",
+            "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html",
+            "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label", "legend",
+            "li", "link", "mark", "html-map", "menu", "html-meta", "meta", "meter",
+            "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p",
+            "param", "pre", "progress", "q", "ruby", "rp", "rt", "samp", "script",
+            "section", "select", "small", "source", "span", "strong", "style", "sub",
+            "summary", "sup", "table", "tbody", "td", "textarea", "tfoot", "th",
+            "thead", "html-time", "title", "tr", "ul", "video", "wbr"
+        ];
 
     function feach(obj, func) {
-        if (obj === undefined) {
-            return;
-        }
-        if (is.Array(obj)) {
-            return obj.forEach(func);
-        } else if (is.Object(obj)) {
-            var key;
+        if (obj !== undefined) {
+            if (is.Array(obj)) {
+                obj.forEach(func);
+            } else if (is.Object(obj)) {
+                var key;
 
-            for (key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    func(obj[key], key, obj);
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        func(obj[key], key, obj);
+                    }
                 }
+            } else {
+                throw "Illegal forEach on non object nor array variable";
             }
-            return;
         }
-        throw "Illegal forEach on non object nor array variable";
     }
 
     function flatten(arr, result) {
@@ -52,11 +68,9 @@ function domizer(_) {
     }
 
     function merge(obj1, obj2) {
-        feach(obj2,
-            function merging(value, key) {
-                obj1[key] = value;
-            }
-        );
+        feach(obj2, function merging(value, key) {
+            obj1[key] = value;
+        });
         return obj1;
     }
 
@@ -68,40 +82,34 @@ function domizer(_) {
         return Array.prototype.slice.call(args, count);
     }
 
-    var tags = [
-        "a", "abbr", "address", "area", "article", "aside", "audio",
-        "b", "base", "bdo", "blockquote", "body", "br", "button", "canvas",
-        "caption", "cite", "code", "col", "colgroup", "command", "datalist",
-        "dd", "del", "details", "dfn", "div", "dl", "dt", "em", "embed",
-        "eventsource", "fieldset", "figcaption", "figure", "footer", "form", "h1",
-        "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html",
-        "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label", "legend",
-        "li", "link", "mark", "html-map", "menu", "html-meta", "meta", "meter",
-        "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p",
-        "param", "pre", "progress", "q", "ruby", "rp", "rt", "samp", "script",
-        "section", "select", "small", "source", "span", "strong", "style", "sub",
-        "summary", "sup", "table", "tbody", "td", "textarea", "tfoot", "th",
-        "thead", "html-time", "title", "tr", "ul", "video", "wbr"
-    ];
-
     function renderAttributes(options) {
         var attributes = [];
 
-        feach(options,
-            function parsing(value, key) {
-                attributes.push(key +
-                    (value !== undefined ?
-                            "=\"" + value + "\"" : ""));
-            }
-        );
+        feach(options, function parsing(value, key) {
+            attributes.push(key +
+                (value !== undefined ?
+                        "=\"" + value + "\"" : ""));
+        });
         return attributes;
     }
 
-    function DomizerObj(tag, attributes, content) {
+    function renderContent(content) {
+        return content.reduce(
+            function (result, value) {
+                if (value instanceof HTMLElement) {
+                    return result + value.outerHTML;
+                }
+                return result + value;
+            },
+            ""
+        );
+    }
+
+    function DomizerObj(tag, attrs, contents) {
         function render() {
-            attributes = attributes ?
-                renderAttributes(attributes).join(" ") : "";
-            content = content ? content.join("") : "";
+            var attributes = attrs ?
+                    renderAttributes(attrs).join(" ") : "",
+                content = contents ? renderContent(contents) : "";
 
             return [
                 "<", tag,
@@ -110,11 +118,37 @@ function domizer(_) {
                 ">"
             ].join("");
         }
+
+        function dom() {
+            var el = document.createElement(tag);
+
+            feach(attrs, function (value, key) {
+                el.setAttribute(key, value);
+            });
+            if (is.Array(contents)) {
+                contents.reduce(
+                    function (el, value) {
+                        if (value instanceof HTMLElement) {
+                            el.append(value);
+                        } else if (value instanceof DomizerObj) {
+                            el.append(value.dom());
+                        } else {
+                            el.append(document.createTextNode(value));
+                        }
+                        return el;
+                    },
+                    el
+                );
+            }
+            return el;
+        }
+
         this.toString = render;
+        this.dom = dom;
     }
 
     function getObjIfNonDomizerObj(el) {
-        var el = getIfType(el, "Object");
+        el = getIfType(el, "Object");
 
         if (!(el instanceof DomizerObj)) {
             return el;
@@ -142,7 +176,7 @@ function domizer(_) {
     };
 
     feach(tags, function buildingTags(tag) {
-         _[tag] = buildTag(tag);
+        _[tag] = buildTag(tag);
     });
 
     function extendTag(tag, tagOptions) {
@@ -152,7 +186,7 @@ function domizer(_) {
                 obj = {},
                 options;
 
-            feach(merge({}, tagOptions), function filling(value, key) {
+            feach(merge(obj, tagOptions), function filling(value, key) {
                 if (value === "") {
                     obj[key] = args[skip];
                     skip += 1;
@@ -167,7 +201,8 @@ function domizer(_) {
             return tag.apply(
                 this,
                 [merge(options, obj)]
-                    .concat(argSlice(arguments, skip)));
+                    .concat(argSlice(arguments, skip))
+            );
         };
     }
 
