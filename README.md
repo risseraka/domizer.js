@@ -14,66 +14,81 @@ I simply tried to get the functional idea back into the tool without it becoming
 Build your domizer object by calling domizer().
 If an optional object parameter, all tag functions will be added within:
 
-    var myDomizer = domizer();
+```js
+var myDomizer = domizer();
+```
 
 Domizer builder returned by domizer() should contain every single HTML tag.
 Build a tag by calling its name as a function:
 
-    var myDomizer = domizer(),
-        myDiv = myDomizer.div();
+```js
+var myDomizer = domizer(),
+    myDiv = myDomizer.div();
+```
 
 Pass attributes as an object through the first argument:
 
-    var myDomizer = domizer(),
-        myDiv = myDomizer.div({
-            "id": "myId",
-            "class": "myClass"
-        });
+```js
+var myDomizer = domizer(),
+    myDiv = myDomizer.div({
+        "id": "myId",
+        "class": "myClass"
+    });
+```
 
 Content is passed as an array or a list of arguments.
 
-    var myDomizer = domizer(),
-        myDiv = myDomizer.div({
-            "id": "myId",
-            "class": "myClass"
-        }, ["That seems pretty easy!", "Sure..."], "Umad bro?");
+```js
+var myDomizer = domizer(),
+    myDiv = myDomizer.div({
+        "id": "myId",
+        "class": "myClass"
+    }, ["That seems pretty easy!", "Sure..."], "Umad bro?");
+```
 
 Get HTML text by calling toString():
 
-    var myDomizer = domizer(),
-        myDiv = myDomizer.div({
-            "id": "myId",
-            "class": "myClass"
-        }, ["That seems pretty easy!", "Sure..."], "Umad bro?");
-    
-    console.log(myDiv.toString());
-    // same thing as
-    // console.log(myDiv + "");
+```js
+var myDomizer = domizer(),
+    myDiv = myDomizer.div({
+        "id": "myId",
+        "class": "myClass"
+    }, ["That seems pretty easy!", "Sure..."], "Umad bro?");
 
-    // => "<div id="myId" class="myClass">That seems pretty easy!Sure...Umad bro?</div>"
+console.log(myDiv.toString());
+// same thing as
+// console.log(myDiv + "");
+
+// => "<div id="myId" class="myClass">That seems pretty easy!Sure...Umad bro?</div>"
+```
 
 Get DOMElement by calling dom():
 
-    var myDomizer = domizer(),
-        myDiv = myDomizer.div({
-            "id": "myId",
-            "class": "myClass"
-        }, ["That seems pretty easy!", "Sure..."], "Umad bro?");
-    
-    console.log(myDiv.dom());
-    
-    // => HTMLDivElement
+```js
+var myDomizer = domizer(),
+    myDiv = myDomizer.div({
+        "id": "myId",
+        "class": "myClass"
+    }, ["That seems pretty easy!", "Sure..."], "Umad bro?");
 
-Build your own tags:
+console.log(myDiv.dom());
 
-    var builder = domizer({}),
-        cssLink;
-    
-    builder.css = builder.extendTag(builder.link, {
-        "type": "text/css",
-        "rel": "stylesheet",
-        "href": ""
-    }),
-    cssLink = builder.css("/css/style.css");
-    
-    console.log(cssLink.toString());
+// => HTMLDivElement
+```
+
+Build your own tags by extending:
+
+```js
+var builder = domizer({}),
+    cssLink;
+
+builder.css = builder.extendTag(builder.link, {
+    "type": "text/css",
+    "rel": "stylesheet",
+    "href": ""
+});
+cssLink = builder.css("/css/style.css");
+
+console.log(cssLink.toString());
+// => "<link type="text/css" rel="stylesheet" href="/css/style.css"/>"
+```
