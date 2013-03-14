@@ -89,12 +89,10 @@ function domizer(_) {
                     renderAttributes(attrs).join(" ") : "",
                 content = contents ? renderContent(contents) : "";
 
-            return [
-                "<", tag,
-                attributes ? " " + attributes : "",
-                content ? ">" + content + "</" + tag : "/",
-                ">"
-            ].join("");
+            return "<" + tag +
+                (attributes ? " " + attributes : "") +
+                (content ? ">" + content + "</" + tag : "/") +
+                ">";
         }
 
         function dom() {
