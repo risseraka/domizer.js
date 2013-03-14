@@ -39,18 +39,15 @@ function domizer(_) {
         throw "Illegal forEach on non object nor array variable";
     }
 
-    function flatten(arr, result) {
-        return arr.reduce(
-            function (result, el) {
-                if (is.Array(el)) {
-                    result = flatten(el, result);
-                } else {
-                    result.push(el);
-                }
-                return result;
-            },
-            result || []
-        );
+    function flatten(obj) {
+        return is.Array(obj) ?
+            obj.reduce(
+                function flattening(result, el) {
+                    return result.concat(flatten(el));
+                },
+                []
+            ) :
+            obj;
     }
 
     function merge(obj1, obj2) {
