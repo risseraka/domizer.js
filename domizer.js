@@ -28,21 +28,15 @@ function domizer(_) {
     ];
 
     function feach(obj, func) {
-        if (obj !== undefined) {
-            if (is.Array(obj)) {
-                obj.forEach(func);
-            } else if (is.Object(obj)) {
-                var key;
-
-                for (key in obj) {
-                    if (obj.hasOwnProperty(key)) {
-                        func(obj[key], key, obj);
-                    }
-                }
-            } else {
-                throw "Illegal forEach on non object nor array variable";
-            }
+        if (is.Array(obj)) {
+            return obj.forEach(func);
         }
+        if (is.Object(obj)) {
+            return Object.keys(obj).forEach(function(key) {
+                func(obj[key], key, obj);
+            });
+        }
+        throw "Illegal forEach on non object nor array variable";
     }
 
     function flatten(arr, result) {
@@ -64,10 +58,6 @@ function domizer(_) {
             obj1[key] = value;
         });
         return obj1;
-    }
-
-    function getIfType(obj, type) {
-        return is[type](obj) ? obj : undefined;
     }
 
     function argSlice(args, count) {
@@ -140,7 +130,7 @@ function domizer(_) {
     }
 
     function getObjIfNonDomizerObj(el) {
-        el = getIfType(el, "Object");
+        el = is.Object(el) ? el : undefined;
 
         if (!(el instanceof DomizerObj)) {
             return el;
