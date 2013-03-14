@@ -3,37 +3,29 @@
 function domizer(_) {
     _ = _ || {};
 
-    var is = (function constructor() {
-            function buildTypeFunc(type) {
-                return function isType(obj) {
-                    return Object.prototype.toString.call(obj) === "[object " + type + "]";
-                };
-            }
-
-            var that = {},
-                types = ["Array", "RegExp", "Date", "Number", "String", "Object", "Function"],
-                i;
-
-            for (i = types.length - 1; i >= 0; i -= 1) {
-                that[types[i]] = buildTypeFunc(types[i]);
-            }
-            return that;
-        }()),
-        tags = [
-            "a", "abbr", "address", "area", "article", "aside", "audio",
-            "b", "base", "bdo", "blockquote", "body", "br", "button", "canvas",
-            "caption", "cite", "code", "col", "colgroup", "command", "datalist",
-            "dd", "del", "details", "dfn", "div", "dl", "dt", "em", "embed",
-            "eventsource", "fieldset", "figcaption", "figure", "footer", "form", "h1",
-            "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html",
-            "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label", "legend",
-            "li", "link", "mark", "html-map", "menu", "html-meta", "meta", "meter",
-            "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p",
-            "param", "pre", "progress", "q", "ruby", "rp", "rt", "samp", "script",
-            "section", "select", "small", "source", "span", "strong", "style", "sub",
-            "summary", "sup", "table", "tbody", "td", "textarea", "tfoot", "th",
-            "thead", "html-time", "title", "tr", "ul", "video", "wbr"
-        ];
+    var is = {
+      Array: function(obj) {
+        return obj instanceof Array;
+      },
+      Object: function(obj) {
+        return typeof obj === "object";
+      }
+    },
+    tags = [
+        "a", "abbr", "address", "area", "article", "aside", "audio",
+        "b", "base", "bdo", "blockquote", "body", "br", "button", "canvas",
+        "caption", "cite", "code", "col", "colgroup", "command", "datalist",
+        "dd", "del", "details", "dfn", "div", "dl", "dt", "em", "embed",
+        "eventsource", "fieldset", "figcaption", "figure", "footer", "form", "h1",
+        "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html",
+        "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label", "legend",
+        "li", "link", "mark", "html-map", "menu", "html-meta", "meta", "meter",
+        "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p",
+        "param", "pre", "progress", "q", "ruby", "rp", "rt", "samp", "script",
+        "section", "select", "small", "source", "span", "strong", "style", "sub",
+        "summary", "sup", "table", "tbody", "td", "textarea", "tfoot", "th",
+        "thead", "html-time", "title", "tr", "ul", "video", "wbr"
+    ];
 
     function feach(obj, func) {
         if (obj !== undefined) {
