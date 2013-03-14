@@ -106,13 +106,11 @@ function domizer(_) {
             if (is.Array(contents)) {
                 contents.reduce(
                     function (el, value) {
-                        if (value instanceof HTMLElement) {
-                            el.appendChild(value);
-                        } else if (value instanceof DomizerObj) {
-                            el.appendChild(value.dom());
-                        } else {
-                            el.appendChild(document.createTextNode(value));
-                        }
+                        el.appendChild(
+                          (value instanceof HTMLElement && value) ||
+                          (value instanceof DomizerObj && value.dom()) ||
+                          document.createTextNode(value)
+                        );
                         return el;
                     },
                     el
