@@ -57,9 +57,8 @@ function domizer(_) {
         return obj1;
     }
 
-    function argSlice(args, count) {
-        return Array.prototype.slice.call(args, count);
-    }
+    // thx @webreflection
+    var argSlice = Array.prototype.slice.call.bind(Array.prototype.slice);
 
     function renderAttributes(options) {
         var attributes = [];
@@ -127,11 +126,7 @@ function domizer(_) {
     }
 
     function getObjIfNonDomizerObj(el) {
-        el = is.Object(el) ? el : undefined;
-
-        if (!(el instanceof DomizerObj)) {
-            return el;
-        }
+        return (el instanceof DomizerObj) ? undefined : el;
     }
 
     function buildTag(el) {
