@@ -100,18 +100,18 @@ function domizer(_) {
         function dom() {
             var el = document.createElement(tag);
 
-            feach(attrs, function (value, key) {
+            attrs && feach(attrs, function (value, key) {
                 el.setAttribute(key, value);
             });
             if (is.Array(contents)) {
                 contents.reduce(
                     function (el, value) {
                         if (value instanceof HTMLElement) {
-                            el.append(value);
+                            el.appendChild(value);
                         } else if (value instanceof DomizerObj) {
-                            el.append(value.dom());
+                            el.appendChild(value.dom());
                         } else {
-                            el.append(document.createTextNode(value));
+                            el.appendChild(document.createTextNode(value));
                         }
                         return el;
                     },
@@ -126,7 +126,7 @@ function domizer(_) {
     }
 
     function getObjIfNonDomizerObj(el) {
-        return (el instanceof DomizerObj) ? undefined : el;
+        return (el instanceof DomizerObj || !is.Object(el)) ? undefined : el;
     }
 
     function buildTag(el) {
